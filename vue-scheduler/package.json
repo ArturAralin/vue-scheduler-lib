@@ -1,0 +1,12 @@
+{
+  "name": "vue-scheduler-lib",
+  "version": "0.0.1-alpha.2",
+  "description": "Just vue scheduler library",
+  "main": "./dist/Scheduler.vue.common.js",
+  "author": "Artur Aralin",
+  "license": "MIT",
+  "private": false,
+  "dependencies": {
+    "vue": "^2.6.12"
+  }
+}
