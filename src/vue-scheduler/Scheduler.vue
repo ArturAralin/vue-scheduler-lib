@@ -45,8 +45,6 @@ import {
   startOfDay,
   parseISO,
   getMonth,
-  subMonths,
-  addMonths,
   getDay,
 } from 'date-fns';
 import EventItem from './components/EventItem.vue';
