@@ -150,7 +150,6 @@ export default Vue.extend({
 
 <style scoped>
 .scheduler-event-item {
-  /* display: inline-block; */
   position: relative;
   width: 100%;
   height: 16px;

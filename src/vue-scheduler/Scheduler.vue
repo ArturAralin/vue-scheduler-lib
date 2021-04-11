@@ -240,8 +240,6 @@ export default Vue.extend({
   height: 170px;
   width: 14%;
   text-align: right;
-
-  /*  */
   border-left: 1px solid #3B3C40;
   border-top: 1px solid #3B3C40;
 }
