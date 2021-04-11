@@ -1,11 +1,21 @@
 {
   "name": "vue-scheduler-lib",
   "version": "0.0.1-alpha.2",
-  "description": "Just vue scheduler library",
-  "main": "./dist/Scheduler.vue.common.js",
-  "author": "Artur Aralin",
+  "description": "Just vue scheduler view library",
+  "main": "./dist/vue-scheduler-lib.common.js",
+  "author": "Artur Aralin <artur.aralin97@gmail.com>",
+  "repository": {
+    "type": "git",
+    "url": ""
+  },
   "license": "MIT",
   "private": false,
+  "tags": [
+    "vue",
+    "scheduler",
+    "calendar",
+    "free"
+  ],
   "dependencies": {
     "vue": "^2.6.12"
   }
