@@ -1,24 +1,22 @@
 # vue-scheduler
 
-## Project setup
-```
-yarn install
-```
 
-### Compiles and hot-reloads for development
+# api example
+```html
+<Scheduler
+  onCellClick="..."
+  onCellDoubleClick="..."
+  onEventDoubleClick="..."
+  onEventClick="..."
+  eventDragged="..."
+  :events="[
+    {
+      id: 'event_id',
+      from: parseISO('2021-04-09'),
+      to: parseISO('2021-04-10'),
+      summary: 'Event summary',
+    },
+  ]"
+  month="2021-04"
+/>
 ```
-yarn serve
-```
-
-### Compiles and minifies for production
-```
-yarn build
-```
-
-### Lints and fixes files
-```
-yarn lint
-```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
