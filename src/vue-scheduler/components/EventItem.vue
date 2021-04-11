@@ -8,15 +8,12 @@
     @drop="itemDrop($event, cellId)"
     @dragenter.prevent
     @dragover.prevent
-    :class="{
-      'scheduler-event-item': true,
-      'drag-highlight': event.empty && dragMode && dragOver,
-    }"
+    class="scheduler-event-item"
     :style="eventItemStyles"
     draggable="true"
   >
     <div
-      v-if="!event.empty"
+      v-if="event.type === 'event'"
       :class="{
         'scheduler-event-item-inner': true,
         'filled': true,
@@ -28,9 +25,13 @@
       <span>{{summary}}</span>
     </div>
     <div
-      v-if="event.empty"
+      v-if="event.type === 'empty'"
       class="scheduler-event-item-inner empty"
     ></div>
+    <div
+      v-if="event.type === 'info'"
+      class="scheduler-event-item-inner info"
+    >{{summary}}</div>
   </div>
 </template>
 
@@ -73,7 +74,7 @@ export default Vue.extend({
   },
   computed: {
     summary(): string {
-      if (!this.event.headInCurrentRow && !this.drag) {
+      if (!this.event.headInCurrentRow && !this.drag && this.event.type !== 'info') {
         return '‎‎';
       }
 
@@ -152,12 +153,12 @@ export default Vue.extend({
   /* display: inline-block; */
   position: relative;
   width: 100%;
-  height: 18px;
+  height: 16px;
   text-align: left;
-  font-size: 14px;
+  font-size: 13px;
 }
 
-.scheduler-event-item-inner {
+.scheduler-event-item-inner.filled {
   background: #276341;
 }
 
@@ -165,7 +166,8 @@ export default Vue.extend({
   background: #2e965b;
 }
 
-/* .scheduler-event-item-inner.focused {
-  background: violet;
-} */
+.scheduler-event-item-inner.info {
+  margin-left: 8px;
+}
+
 </style>

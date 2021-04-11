@@ -25,7 +25,7 @@
       }"
     >{{formatCellDateFn(cell)}}</div>
       <EventItem
-        v-bind:key="e.summary"
+        v-bind:key="e.id"
         v-for="e in cell.events"
         :cellId="cell.cellId"
         :event="e"
@@ -54,16 +54,16 @@ import {
   getMonth,
 } from 'date-fns';
 import EventItem from './components/EventItem.vue';
-import { EmptyEvent, ScheduledEvent } from './interfaces/scheduled-event.interface';
+import { EmptyEvent, ScheduledEvent, ScheduledEventWithData } from './interfaces/scheduled-event.interface';
 import { ScheduleEventCell } from './interfaces/scheduler-event-cell.interface';
 import calculateSchedulerCells from './calculate-scheduler-cells';
 
 function normalizeCell(
-  cell: ScheduleEventCell<ScheduledEvent | { empty: true }>,
+  cell: ScheduleEventCell<ScheduledEvent>,
 ): ScheduleEventCell<ScheduledEvent> {
   const clearCell: ScheduleEventCell<ScheduledEvent> = {
     ...cell,
-    events: cell.events.filter((e) => !(e as { empty: boolean }).empty) as ScheduledEvent[],
+    events: cell.events.filter((e) => e.type === 'event'),
   };
 
   return clearCell;
@@ -137,36 +137,33 @@ export default Vue.extend({
 
       return defaultFormatCellDate(cell.date);
     },
-    cellClick(cell: ScheduleEventCell<ScheduledEvent | { empty: true }>) {
+    cellClick(cell: ScheduleEventCell<ScheduledEvent >) {
       this.$emit('onCellClick', normalizeCell(cell));
     },
-    cellDoubleClick(cell: ScheduleEventCell<ScheduledEvent | { empty: true }>) {
+    cellDoubleClick(cell: ScheduleEventCell<ScheduledEvent>) {
       this.$emit('onCellDoubleClick', normalizeCell(cell));
     },
     eventClick(e: ScheduledEvent) {
-      if (e.empty) {
-        this.activeEventId = null;
+      if (e.type === 'event') {
+        this.activeEventId = e.id;
+        this.$emit('onEventClick', e);
         return;
       }
 
-      this.activeEventId = e.id;
-
-      this.$emit('onEventClick', e);
+      this.activeEventId = null;
     },
     eventDoubleClick(e: ScheduledEvent) {
-      if (e.empty) {
-        return;
+      if (e.type === 'event') {
+        this.$emit('onEventDoubleClick', e);
       }
-
-      this.$emit('onEventDoubleClick', e);
     },
     eventFocused(e: ScheduledEvent) {
-      if (e.empty) {
-        this.focusedEventId = null;
+      if (e.type === 'event') {
+        this.focusedEventId = e.id;
         return;
       }
 
-      this.focusedEventId = e.id;
+      this.focusedEventId = null;
     },
     // event item drag
     eventItemDragStart(cellId: string, eventId: string) {
@@ -197,7 +194,7 @@ export default Vue.extend({
   },
   computed: {
     sortedEvents() {
-      return (this.events as ScheduledEvent[]).sort((a, b) => {
+      return (this.events as ScheduledEventWithData[]).sort((a, b) => {
         const aFrom = a.from.getTime();
         const bFrom = b.from.getTime();
 
@@ -240,7 +237,7 @@ export default Vue.extend({
 }
 
 .scheduler-cell {
-  height: 150px;
+  height: 170px;
   width: 14%;
   text-align: right;
 

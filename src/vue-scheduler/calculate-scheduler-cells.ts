@@ -2,33 +2,48 @@ import addDays from 'date-fns/addDays';
 import format from 'date-fns/format';
 import startOfDay from 'date-fns/startOfDay';
 import getDay from 'date-fns/getDay';
-import { EmptyEvent, ScheduledEvent } from './interfaces/scheduled-event.interface';
+import { ScheduledEvent, ScheduledEventWithData } from './interfaces/scheduled-event.interface';
 import { ScheduleEventCell } from './interfaces/scheduler-event-cell.interface';
 
 const DAYS_IN_ROW = 7;
+const MAX_EVENTS_IN_ROW = 6;
 
 function fillEvents(
   cells: ScheduleEventCell<ScheduledEvent>[],
-): ScheduleEventCell<ScheduledEvent | EmptyEvent>[] {
+): ScheduleEventCell<ScheduledEvent>[] {
   const eventPosMax: Record<string, number> = {};
 
   cells.forEach((cell) => {
     cell.events.forEach((e, pos) => {
-      eventPosMax[e.id] = Math.max(pos + 1, eventPosMax[e.id] || 1);
+      if (e.type === 'event') {
+        eventPosMax[e.id] = Math.max(pos + 1, eventPosMax[e.id] || 1);
+      }
     });
   });
 
   return cells.map((cell) => {
-    const events: (ScheduledEvent | EmptyEvent)[] = [...Array(5)].map(() => ({
+    const events: ScheduledEvent[] = [...Array(MAX_EVENTS_IN_ROW)].map<ScheduledEvent>(() => ({
       cellId: cell.cellId,
-      empty: true,
+      type: 'empty',
     }));
 
-    cell.events.forEach((e) => {
-      const maxPos = eventPosMax[e.id];
+    cell.events.slice(0, MAX_EVENTS_IN_ROW).forEach((e) => {
+      if (e.type === 'event') {
+        const maxPos = eventPosMax[e.id];
 
-      events[maxPos - 1] = e;
+        events[maxPos - 1] = e;
+      }
     });
+
+    if (cell.events.length > MAX_EVENTS_IN_ROW) {
+      const info: ScheduledEvent = {
+        cellId: cell.cellId,
+        type: 'info',
+        summary: `${cell.events.length - MAX_EVENTS_IN_ROW} more`,
+      };
+      events.push(info);
+    }
+
     return {
       ...cell,
       events,
@@ -39,10 +54,10 @@ function fillEvents(
 export default function calculateSchedulerCells(
   startOf: Date,
   rows: number,
-  events: ScheduledEvent[],
-): ScheduleEventCell<ScheduledEvent | EmptyEvent>[] {
+  events: ScheduledEventWithData[],
+): ScheduleEventCell<ScheduledEvent>[] {
   const today = startOfDay(new Date()).getTime();
-  let cells: ScheduleEventCell<ScheduledEvent | EmptyEvent>[] = [];
+  let cells: ScheduleEventCell<ScheduledEvent>[] = [];
 
   let offset = 0;
   for (let row = 0; row < rows; row += 1) {
@@ -75,6 +90,7 @@ export default function calculateSchedulerCells(
         .map((e) => {
           const event: ScheduledEvent = {
             ...e,
+            type: 'event',
             headInCurrentRow: !headerIds.has(e.id),
             tailInCurrentRow: col === (DAYS_IN_ROW - 1),
             head: !prevEventsIds.has(e.id),
