@@ -1,0 +1,19 @@
+.scheduler-event-item {
+  position: relative;
+  width: 100%;
+  height: 16px;
+  text-align: left;
+  font-size: 13px;
+}
+
+.scheduler-event-item-inner.filled {
+  background: #276341;
+}
+
+.scheduler-event-item-inner.active {
+  background: #2e965b;
+}
+
+.scheduler-event-item-inner.info {
+  margin-left: 8px;
+}

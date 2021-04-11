@@ -58,6 +58,8 @@ import { EmptyEvent, ScheduledEvent, ScheduledEventWithData } from './interfaces
 import { ScheduleEventCell } from './interfaces/scheduler-event-cell.interface';
 import calculateSchedulerCells from './calculate-scheduler-cells';
 
+import './styles/scheduler.scss';
+
 function normalizeCell(
   cell: ScheduleEventCell<ScheduledEvent>,
 ): ScheduleEventCell<ScheduledEvent> {
@@ -212,62 +214,3 @@ export default Vue.extend({
   },
 });
 </script>
-
-<style scoped>
-.scheduler {
-  background: #22242A;
-  color: #CECECE;
-  text-align: center;
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  user-select: none;
-  justify-content: center;
-  /* remove this rule */
-  min-width: 700px;
-}
-
-.scheduler-navigation {
-  width: 100%;
-  text-align: right;
-}
-
-.scheduler-row {
-  width: 100%;
-}
-
-.scheduler-cell {
-  height: 170px;
-  width: 14%;
-  text-align: right;
-  border-left: 1px solid #3B3C40;
-  border-top: 1px solid #3B3C40;
-}
-
-.scheduler-cell.highlight {
-  background: #55615a48 !important;
-}
-
-.scheduler-cell.weekend {
-  background: #222324;
-}
-
-.scheduler-cell.last-in-row {
-  border-right: 1px solid #3B3C40;
-}
-
-.scheduler-cell.bottom-row {
-  border-bottom: 1px solid #34353a;
-}
-
-.scheduler-cell-date {
-  display: inline-block;
-  margin: 5px 7px 4px 0;
-  border-radius: 4px;
-  padding: 0 4px;
-}
-
-.scheduler-cell-date.active {
-  background: rgb(145, 41, 41);
-}
-</style>

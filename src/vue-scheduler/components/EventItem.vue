@@ -37,6 +37,7 @@
 
 <script lang="ts">
 import { Vue } from 'vue-property-decorator';
+import '../styles/event-item.scss';
 
 export default Vue.extend({
   name: 'EventItem',
@@ -67,7 +68,7 @@ export default Vue.extend({
     itemDragOver() {
       this.eventItemDragOver(this.event.cellId);
     },
-    itemDrop(e: any) {
+    itemDrop(e: MouseEvent) {
       e.preventDefault();
       this.eventItemDragDrop(this.cellId);
     },
@@ -147,26 +148,3 @@ export default Vue.extend({
   },
 });
 </script>
-
-<style scoped>
-.scheduler-event-item {
-  position: relative;
-  width: 100%;
-  height: 16px;
-  text-align: left;
-  font-size: 13px;
-}
-
-.scheduler-event-item-inner.filled {
-  background: #276341;
-}
-
-.scheduler-event-item-inner.active {
-  background: #2e965b;
-}
-
-.scheduler-event-item-inner.info {
-  margin-left: 8px;
-}
-
-</style>
