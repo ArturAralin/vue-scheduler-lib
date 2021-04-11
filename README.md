@@ -1,5 +1,6 @@
 # vue-scheduler
 
+![Interface example](./example.png)
 
 # api example
 ```html

@@ -27,12 +27,6 @@ export default Vue.extend({
   data: () => ({
     events: [
       {
-        id: '12ssss3',
-        from: parseISO('2021-04-16'),
-        to: parseISO('2021-04-16'),
-        summary: 'Поездка в Тихорецк',
-      },
-      {
         id: '123',
         from: parseISO('2021-04-09'),
         to: parseISO('2021-04-10'),
@@ -132,5 +126,6 @@ export default Vue.extend({
   -moz-osx-font-smoothing: grayscale;
   // text-align: center;
   color: #2c3e50;
+  margin: 5%;
 }
 </style>
