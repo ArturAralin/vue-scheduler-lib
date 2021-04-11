@@ -6,7 +6,7 @@
   "author": "Artur Aralin <artur.aralin97@gmail.com>",
   "repository": {
     "type": "git",
-    "url": ""
+    "url": "https://github.com/ArturAralin/vue-scheduler-lib.git"
   },
   "license": "MIT",
   "private": false,
