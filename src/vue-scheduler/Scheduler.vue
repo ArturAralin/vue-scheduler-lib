@@ -12,23 +12,32 @@
         'scheduler-cell': true,
         'weekend': cell.weekend,
         'active': cell.active,
+        'highlight': eventItemDrag && mouseOverCellId === cell.cellId,
         'last-in-row': cell.lastInRow,
         'bottom-row': cell.bottomRow,
       }"
+      :data-cell-id="cell.cellId"
     >
-    <div :class="{
-      'scheduler-cell-date': true,
-      'active': cell.active,
-    }">{{formatCellDateFn(cell)}}</div>
+    <div
+      :class="{
+        'scheduler-cell-date': true,
+        'active': cell.active,
+      }"
+    >{{formatCellDateFn(cell)}}</div>
       <EventItem
         v-bind:key="e.summary"
         v-for="e in cell.events"
+        :cellId="cell.cellId"
         :event="e"
+        :dragOverId="Boolean(eventItemDrag)"
         :focused="focusedEventId === e.id"
         :active="activeEventId === e.id"
         :onClick="eventClick.bind(null, e)"
         :onDobuleClick="eventDoubleClick.bind(null, e)"
         :mouseover="eventFocused.bind(null, e)"
+        :event-item-drag-start="eventItemDragStart"
+        :event-item-drag-drop="eventItemDragDrop"
+        :event-item-drag-over="eventItemDragOver"
       />
     </div>
   </div>
@@ -40,122 +49,14 @@ import {
   startOfMonth,
   startOfWeek,
   getDaysInMonth,
-  addDays,
   format,
-  startOfDay,
   parseISO,
   getMonth,
-  getDay,
 } from 'date-fns';
 import EventItem from './components/EventItem.vue';
-import { ScheduledEvent } from './interfaces/sheduled-event.interface';
-
-const DAYS_IN_ROW = 7;
-
-interface ScheduleEventCell<T> {
-  cellId: string;
-  date: Date;
-  active: boolean;
-  weekend: boolean;
-  lastInRow: boolean;
-  bottomRow: boolean;
-  events: T[];
-}
-
-function fillEvents(
-  cells: ScheduleEventCell<ScheduledEvent>[],
-): ScheduleEventCell<ScheduledEvent | { empty: true }>[] {
-  const eventPosMax: Record<string, number> = {};
-
-  cells.forEach((cell) => {
-    cell.events.forEach((e, pos) => {
-      eventPosMax[e.id] = Math.max(pos + 1, eventPosMax[e.id] || 1);
-    });
-  });
-
-  return cells.map((cell) => {
-    const events: (ScheduledEvent | { empty: true })[] = [...Array(5)].map(() => ({ empty: true }));
-
-    cell.events.forEach((e) => {
-      const maxPos = eventPosMax[e.id];
-
-      events[maxPos - 1] = e;
-    });
-    return {
-      ...cell,
-      events,
-    };
-  });
-}
-
-function calculateSchedulerCells(
-  startOf: Date,
-  rows: number,
-  events: ScheduledEvent[],
-): ScheduleEventCell<ScheduledEvent | { empty: true }>[] {
-  const today = startOfDay(new Date()).getTime();
-  let cells: ScheduleEventCell<ScheduledEvent | { empty: true }>[] = [];
-
-  let offset = 0;
-  for (let row = 0; row < rows; row += 1) {
-    const rowCells: ScheduleEventCell<ScheduledEvent>[] = [];
-    const headerIds = new Set();
-
-    for (let col = 0; col < DAYS_IN_ROW; col += 1) {
-      const date = addDays(startOf, offset);
-      const nextDate = addDays(startOf, offset + 1);
-      const prevDate = addDays(startOf, offset - 1);
-      const nextEventsIds = new Set(
-        events
-          .filter((e) => (
-            nextDate.getTime() >= e.from.getTime() && nextDate.getTime() <= e.to.getTime()
-          ))
-          .map((e) => e.id),
-      );
-      const prevEventsIds = new Set(
-        events
-          .filter((e) => (
-            prevDate.getTime() >= e.from.getTime() && prevDate.getTime() <= e.to.getTime()
-          ))
-          .map((e) => e.id),
-      );
-
-      const eventsInRange = events
-        .filter((e) => (
-          date.getTime() >= e.from.getTime() && date.getTime() <= e.to.getTime()
-        ))
-        .map((e) => {
-          const event: ScheduledEvent = {
-            ...e,
-            headInCurrentRow: !headerIds.has(e.id),
-            tailInCurrentRow: col === (DAYS_IN_ROW - 1),
-            head: !prevEventsIds.has(e.id),
-            tail: !nextEventsIds.has(e.id),
-          };
-
-          headerIds.add(e.id);
-
-          return event;
-        });
-
-      const weekDayNumber = getDay(date);
-      const event: ScheduleEventCell<ScheduledEvent> = {
-        date,
-        cellId: format(date, 'yyyy_MM_dd_HH_mm_ss'),
-        active: startOfDay(date).getTime() === today,
-        weekend: weekDayNumber === 6 || weekDayNumber === 0,
-        events: eventsInRange,
-        lastInRow: col === (DAYS_IN_ROW - 1),
-        bottomRow: row === (rows - 1),
-      };
-      offset += 1;
-      rowCells.push(event);
-    }
-    cells = cells.concat(fillEvents(rowCells));
-  }
-
-  return cells;
-}
+import { EmptyEvent, ScheduledEvent } from './interfaces/scheduled-event.interface';
+import { ScheduleEventCell } from './interfaces/scheduler-event-cell.interface';
+import calculateSchedulerCells from './calculate-scheduler-cells';
 
 function normalizeCell(
   cell: ScheduleEventCell<ScheduledEvent | { empty: true }>,
@@ -189,13 +90,25 @@ export default Vue.extend({
     currentMonth: startOfMonth(new Date()),
     focusedEventId: null as string | null,
     activeEventId: null as string | null,
-    cells: [] as ScheduleEventCell<ScheduledEvent | { empty: true }>[],
+    cells: [] as ScheduleEventCell<ScheduledEvent | EmptyEvent>[],
+    //
+    eventItemDrag: null as null | { cellId: string, eventId: string },
+    mouseOverCellId: null as null | string,
   }),
   mounted() {
     const month = this.month
       ? parseISO(this.month)
       : new Date();
     this.setMonth(month);
+  },
+  watch: {
+    events() {
+      this.cells = calculateSchedulerCells(
+        this.startOf,
+        this.linesCount,
+        this.sortedEvents,
+      );
+    },
   },
   methods: {
     setMonth(month: Date) {
@@ -255,6 +168,32 @@ export default Vue.extend({
 
       this.focusedEventId = e.id;
     },
+    // event item drag
+    eventItemDragStart(cellId: string, eventId: string) {
+      this.eventItemDrag = {
+        cellId,
+        eventId,
+      };
+    },
+    eventItemDragDrop(newCellId: string) {
+      if (this.eventItemDrag && this.eventItemDrag.cellId !== newCellId) {
+        const cell = this.cells.find((c) => c.cellId === newCellId);
+
+        if (cell) {
+          const { cellId, date } = cell;
+          this.$emit('eventDragged', {
+            cellId,
+            date,
+            eventId: this.eventItemDrag.eventId,
+          });
+        }
+      }
+
+      this.eventItemDrag = null;
+    },
+    eventItemDragOver(cellId: string) {
+      this.mouseOverCellId = cellId;
+    },
   },
   computed: {
     sortedEvents() {
@@ -308,6 +247,10 @@ export default Vue.extend({
   /*  */
   border-left: 1px solid #3B3C40;
   border-top: 1px solid #3B3C40;
+}
+
+.scheduler-cell.highlight {
+  background: #55615a48 !important;
 }
 
 .scheduler-cell.weekend {

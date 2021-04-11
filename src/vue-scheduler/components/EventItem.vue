@@ -3,10 +3,17 @@
     @click="onClick"
     @dblclick="onDobuleClick"
     @mouseover="mouseover"
+    @dragstart="itemDragStart"
+    @dragover="itemDragOver"
+    @drop="itemDrop($event, cellId)"
+    @dragenter.prevent
+    @dragover.prevent
     :class="{
       'scheduler-event-item': true,
+      'drag-highlight': event.empty && dragMode && dragOver,
     }"
     :style="eventItemStyles"
+    draggable="true"
   >
     <div
       v-if="!event.empty"
@@ -32,20 +39,41 @@ import { Vue } from 'vue-property-decorator';
 
 export default Vue.extend({
   name: 'EventItem',
-  data: () => ({}),
+  data: () => ({
+    dragged: null as null | Element,
+    drag: false,
+  }),
   props: {
+    cellId: String,
     event: Object,
     focused: Boolean,
     active: Boolean,
+    dragMode: Boolean,
 
     // events
     onClick: Function,
     onDobuleClick: Function,
     mouseover: Function,
+    eventItemDragStart: Function,
+    eventItemDragDrop: Function,
+    eventItemDragOver: Function,
+  },
+  methods: {
+    itemDragStart() {
+      this.drag = true;
+      this.eventItemDragStart(this.cellId, this.event.id);
+    },
+    itemDragOver() {
+      this.eventItemDragOver(this.event.cellId);
+    },
+    itemDrop(e: any) {
+      e.preventDefault();
+      this.eventItemDragDrop(this.cellId);
+    },
   },
   computed: {
     summary(): string {
-      if (!this.event.headInCurrentRow) {
+      if (!this.event.headInCurrentRow && !this.drag) {
         return '‎‎';
       }
 

@@ -9,3 +9,8 @@ export interface ScheduledEvent {
   head: boolean;
   tail: boolean;
 }
+
+export interface EmptyEvent {
+  cellId: string;
+  empty: true;
+}
