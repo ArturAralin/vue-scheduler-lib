@@ -9,10 +9,9 @@
 </template>
 
 <script lang="ts">
-import { parseISO } from 'date-fns';
-import addDays from 'date-fns/addDays';
-import getDate from 'date-fns/getDate/index';
 import Vue from 'vue';
+import parseISO from 'date-fns/parseISO';
+import addMilliseconds from 'date-fns/addMilliseconds';
 import Scheduler from './vue-scheduler/Scheduler.vue';
 
 // // eslint-disable-next-line
@@ -57,17 +56,60 @@ export default Vue.extend({
         to: parseISO('2021-04-10'),
         summary: 'between',
       },
+      {
+        id: '222вфывыыфв',
+        from: parseISO('2021-04-14'),
+        to: parseISO('2021-04-14'),
+        summary: 'between 1',
+      },
+      {
+        id: '2221111в',
+        from: parseISO('2021-04-14'),
+        to: parseISO('2021-04-14'),
+        summary: 'between 2',
+      },
+      {
+        id: '222211221111в',
+        from: parseISO('2021-04-14'),
+        to: parseISO('2021-04-14'),
+        summary: 'between 3',
+      },
+      {
+        id: '22221выв1221111в',
+        from: parseISO('2021-04-14'),
+        to: parseISO('2021-04-14'),
+        summary: 'between 4',
+      },
+      {
+        id: '22221ввывыв1221111в',
+        from: parseISO('2021-04-14'),
+        to: parseISO('2021-04-14'),
+        summary: 'between 5',
+      },
+      {
+        id: '22211121выв1221111в',
+        from: parseISO('2021-04-14'),
+        to: parseISO('2021-04-14'),
+        summary: 'between 6',
+      },
+      {
+        id: '22211121выв12211чч11в',
+        from: parseISO('2021-04-14'),
+        to: parseISO('2021-04-14'),
+        summary: 'between 7',
+      },
     ],
   }),
   methods: {
     eventDragged(dragEvent: any) {
       this.events = this.events.map((e) => {
         if (e.id === dragEvent.eventId) {
-          const diff = getDate(dragEvent.date) - getDate(e.from);
+          const diff = dragEvent.date.getTime() - e.from.getTime();
+
           return {
             ...e,
-            from: addDays(e.from, diff),
-            to: addDays(e.to, diff),
+            from: addMilliseconds(e.from, diff),
+            to: addMilliseconds(e.to, diff),
           };
         }
 
