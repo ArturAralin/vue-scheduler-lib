@@ -5,4 +5,3 @@ rm -f ./vue-scheduler/dist/demo.html
 
 # readme
 cp README.md ./vue-scheduler
-cp example.png ./vue-scheduler
