@@ -4,6 +4,17 @@
     class="scheduler"
   >
     <div
+      v-bind:key="weekday"
+      v-for="(weekday, idx) in weekdays"
+      :class="{
+        'scheduler-weekday': true,
+        'head': idx === 0,
+        'tail': idx === (weekdays.length - 1),
+      }"
+    >
+      <span>{{weekday}}</span>
+    </div>
+    <div
       v-bind:key="cell.cellId"
       v-for="cell in cells"
       @click.self="cellClick(cell)"
@@ -13,6 +24,7 @@
         'weekend': cell.weekend,
         'active': cell.active,
         'highlight': eventItemDrag && mouseOverCellId === cell.cellId,
+        'shaded': cell.shaded,
         'last-in-row': cell.lastInRow,
         'bottom-row': cell.bottomRow,
       }"
@@ -86,6 +98,15 @@ export default Vue.extend({
     month: String,
   },
   data: () => ({
+    weekdays: [
+      'Monday',
+      'Tuesday',
+      'Wednesday',
+      'Thursday',
+      'Friday',
+      'Saturday',
+      'Sunday',
+    ],
     schedulerId: `scheduler_${Math.trunc(Math.random() * 100000)}`,
     linesCount: 0,
     startOf: new Date(),
@@ -105,7 +126,11 @@ export default Vue.extend({
   },
   watch: {
     events() {
+      const month = this.month
+        ? parseISO(this.month)
+        : new Date();
       this.cells = calculateSchedulerCells(
+        month,
         this.startOf,
         this.linesCount,
         this.sortedEvents,
@@ -127,6 +152,7 @@ export default Vue.extend({
       this.startOf = startOfCalendar;
       this.currentMonth = currentMonth;
       this.cells = calculateSchedulerCells(
+        month,
         this.startOf,
         this.linesCount,
         this.sortedEvents,

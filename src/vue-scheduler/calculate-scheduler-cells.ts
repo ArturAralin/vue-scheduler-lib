@@ -2,6 +2,7 @@ import addDays from 'date-fns/addDays';
 import format from 'date-fns/format';
 import startOfDay from 'date-fns/startOfDay';
 import getDay from 'date-fns/getDay';
+import getMonth from 'date-fns/getMonth';
 import { ScheduledEvent, ScheduledEventWithData } from './interfaces/scheduled-event.interface';
 import { ScheduleEventCell } from './interfaces/scheduler-event-cell.interface';
 
@@ -52,11 +53,13 @@ function fillEvents(
 }
 
 export default function calculateSchedulerCells(
+  month: Date,
   startOf: Date,
   rows: number,
   events: ScheduledEventWithData[],
 ): ScheduleEventCell<ScheduledEvent>[] {
   const today = startOfDay(new Date()).getTime();
+  const mainMonthNumber = getMonth(month);
   let cells: ScheduleEventCell<ScheduledEvent>[] = [];
 
   let offset = 0;
@@ -108,6 +111,7 @@ export default function calculateSchedulerCells(
         cellId: format(date, 'yyyy_MM_dd_HH_mm_ss'),
         active: startOfDay(date).getTime() === today,
         weekend: weekDayNumber === 6 || weekDayNumber === 0,
+        shaded: mainMonthNumber !== getMonth(date),
         events: eventsInRange,
         lastInRow: col === (DAYS_IN_ROW - 1),
         bottomRow: row === (rows - 1),

@@ -5,5 +5,6 @@ export interface ScheduleEventCell<T> {
   weekend: boolean;
   lastInRow: boolean;
   bottomRow: boolean;
+  shaded: boolean;
   events: T[];
 }

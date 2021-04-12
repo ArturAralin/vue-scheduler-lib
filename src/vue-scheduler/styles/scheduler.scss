@@ -1,6 +1,5 @@
 
 .scheduler {
-  background: #22242A;
   color: #CECECE;
   text-align: center;
   display: flex;
@@ -27,6 +26,7 @@
   text-align: right;
   border-left: 1px solid #3B3C40;
   border-top: 1px solid #3B3C40;
+  background: #22242A;
 }
 
 .scheduler-cell.highlight {
@@ -35,6 +35,11 @@
 
 .scheduler-cell.weekend {
   background: #222324;
+}
+
+.scheduler-cell.shaded {
+  background: #191a1b;
+  color: #525252;
 }
 
 .scheduler-cell.last-in-row {
@@ -54,4 +59,23 @@
 
 .scheduler-cell-date.active {
   background: rgb(145, 41, 41);
+}
+
+.scheduler-weekday {
+  width: 14%;
+  background: #22242A;
+  text-align: right;
+  padding: 5px 0;
+}
+
+.scheduler-weekday>span {
+  margin: 10px;
+}
+
+.scheduler-weekday.head {
+  padding-left: 5px;
+}
+
+.scheduler-weekday.tail {
+  padding-right: 5px;
 }
