@@ -4,6 +4,7 @@
     @dblclick="onDobuleClick"
     @mouseover="mouseover"
     @dragstart="itemDragStart"
+    @dragend="itemDragEnd"
     @dragover="itemDragOver"
     @drop="itemDrop($event, cellId)"
     @dragenter.prevent
@@ -64,6 +65,9 @@ export default Vue.extend({
     itemDragStart() {
       this.drag = true;
       this.eventItemDragStart(this.cellId, this.event.id);
+    },
+    itemDragEnd() {
+      this.drag = false;
     },
     itemDragOver() {
       this.eventItemDragOver(this.event.cellId);
