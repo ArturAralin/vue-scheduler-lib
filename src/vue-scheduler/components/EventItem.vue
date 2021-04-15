@@ -11,7 +11,7 @@
     @dragover.prevent
     class="scheduler-event-item"
     :style="eventItemStyles"
-    draggable="true"
+    :draggable="event.type === 'event'"
   >
     <div
       v-if="event.type === 'event'"
