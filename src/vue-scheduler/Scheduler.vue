@@ -57,14 +57,12 @@
 
 <script lang="ts">
 import { Vue } from 'vue-property-decorator';
-import {
-  startOfMonth,
-  startOfWeek,
-  getDaysInMonth,
-  format,
-  parseISO,
-  getMonth,
-} from 'date-fns';
+import startOfMonth from 'date-fns/startOfMonth';
+import startOfWeek from 'date-fns/startOfWeek';
+import getDaysInMonth from 'date-fns/getDaysInMonth';
+import format from 'date-fns/format';
+import parseISO from 'date-fns/parseISO';
+import getMonth from 'date-fns/getMonth';
 import EventItem from './components/EventItem.vue';
 import { EmptyEvent, ScheduledEvent, ScheduledEventWithData } from './interfaces/scheduled-event.interface';
 import { ScheduleEventCell } from './interfaces/scheduler-event-cell.interface';
